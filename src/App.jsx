@@ -30,6 +30,7 @@ function App() {
   const [products, setProducts] = useState([])
   const [form, setForm] = useState(emptyProduct)
   const [editingId, setEditingId] = useState(null)
+  const [showForm, setShowForm] = useState(false)
   const [identity, setIdentity] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -82,6 +83,7 @@ function App() {
 
   function beginEdit(product) {
     setEditingId(product.id)
+    setShowForm(true)
     setForm({
       product_name: product.product_name,
       description: product.description || '',
@@ -95,6 +97,7 @@ function App() {
 
   function cancelEdit() {
     setEditingId(null)
+    setShowForm(false)
     setForm(emptyProduct)
   }
 
@@ -163,82 +166,82 @@ function App() {
   if (!user) {
     return (
       <main className="login-shell">
-        <section className="login-card">
-          <div className="brand-mark" aria-hidden="true">M</div>
-          <p className="eyebrow">PRODUCT MANAGEMENT</p>
-          <h1>Welcome back</h1>
-          <p className="muted">Sign in to manage your product inventory.</p>
-          {error && <div className="alert alert-error" role="alert">{error}</div>}
-          <form className="stack-form" onSubmit={handleLogin}>
-            <label>
-              Username or email
-              <input
-                autoComplete="username"
-                value={identity}
-                onChange={(event) => setIdentity(event.target.value)}
-                required
-              />
-            </label>
-            <label>
-              Password
-              <input
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-              />
-            </label>
-            <button className="button button-primary button-full" disabled={loading}>
-              {loading ? 'Signing in…' : 'Sign in'}
-            </button>
-          </form>
-          <p className="login-footnote">Authenticated by the LavaLust API</p>
+        <header className="shell login-header">
+          <a className="brand" href="/" aria-label="Product Desk">
+            <span className="brand-mark" aria-hidden="true">P</span>
+            <span className="brand-name">Product Desk</span>
+          </a>
+        </header>
+        <section className="login-main">
+          <div className="login-content">
+            <p className="eyebrow">Private workspace</p>
+            <h1 className="login-title">Welcome back.</h1>
+            <p className="login-intro">Sign in to continue to your collection.</p>
+            {error && <div className="notice notice-error" role="alert">{error}</div>}
+            <form className="login-form" onSubmit={handleLogin}>
+              <div className="field">
+                <label htmlFor="identity">Username or email</label>
+                <input
+                  id="identity"
+                  autoComplete="username"
+                  value={identity}
+                  onChange={(event) => setIdentity(event.target.value)}
+                  required
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="password">Password</label>
+                <input
+                  id="password"
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
+                />
+              </div>
+              <button className="button button-primary" disabled={loading}>
+                {loading ? 'Signing in…' : 'Sign in'}
+              </button>
+            </form>
+          </div>
         </section>
+        <footer className="login-footer">Product Desk · Private access</footer>
       </main>
     )
   }
 
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <a className="wordmark" href="/" aria-label="Mark Products home">
-          <span className="brand-mark">M</span>
-          <span>mark<span className="wordmark-light">products</span></span>
-        </a>
-        <div className="account">
-          <span className="account-name">{user.username}</span>
-          <button className="button button-quiet" onClick={handleLogout}>Log out</button>
-        </div>
+    <>
+      <header className="site-header">
+        <nav className="shell site-nav" aria-label="Main navigation">
+          <a className="brand" href="/" aria-label="Product Desk">
+            <span className="brand-mark" aria-hidden="true">P</span>
+            <span className="brand-name">Product Desk</span>
+          </a>
+          <div className="nav-account">
+            <span>{user.username}</span>
+            <button className="button button-secondary button-small" onClick={handleLogout}>Sign out</button>
+          </div>
+        </nav>
       </header>
 
-      <section className="welcome-row">
-        <div>
-          <p className="eyebrow">INVENTORY WORKSPACE</p>
-          <h1>Products</h1>
-          <p className="muted">Manage your catalog and keep your stock up to date.</p>
-        </div>
-        <div className="inventory-total">
-          <span className="total-number">{products.length}</span>
-          <span className="total-label">products</span>
-        </div>
-      </section>
-
-      {error && <div className="alert alert-error" role="alert">{error}</div>}
-      {notice && <div className="alert alert-success" role="status">{notice}</div>}
-
-      <div className="workspace">
-        <section className="panel form-panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">{editingId ? 'UPDATE ITEM' : 'NEW ITEM'}</p>
-              <h2>{editingId ? 'Edit product' : 'Add a product'}</h2>
+      <main className="shell page-main">
+        {showForm ? (
+          <section className="form-shell">
+            <p className="breadcrumb">
+              <button className="link-button" onClick={cancelEdit}>Product catalog</button>
+              <span aria-hidden="true"> / </span>
+              {editingId ? 'Edit product' : 'Add product'}
+            </p>
+            <div className="form-heading">
+              <p className="eyebrow">{editingId ? 'Update inventory' : 'New inventory'}</p>
+              <h1>{editingId ? 'Edit product' : 'Add a product'}</h1>
             </div>
-            {editingId && <button className="text-button" onClick={cancelEdit}>Cancel</button>}
-          </div>
-          <form className="stack-form" onSubmit={handleSubmit}>
+            {error && <div className="notice notice-error" role="alert">{error}</div>}
+            <form className="product-form" onSubmit={handleSubmit}>
             <label>
-              Product name
+              <span>Product name</span>
               <input
                 name="product_name"
                 maxLength="100"
@@ -249,7 +252,7 @@ function App() {
               />
             </label>
             <label>
-              Description <span className="optional">Optional</span>
+              <span>Description <span className="optional">Optional</span></span>
               <textarea
                 name="description"
                 rows="4"
@@ -260,9 +263,9 @@ function App() {
             </label>
             <div className="form-grid">
               <label>
-                Price
+                <span>Price</span>
                 <div className="input-prefix">
-                  <span>$</span>
+                  <span>₱</span>
                   <input
                     name="price"
                     type="number"
@@ -277,7 +280,7 @@ function App() {
                 </div>
               </label>
               <label>
-                Quantity
+                <span>Quantity</span>
                 <input
                   name="quantity"
                   type="number"
@@ -290,57 +293,76 @@ function App() {
                 />
               </label>
             </div>
-            <button className="button button-primary button-full" disabled={saving}>
+            <div className="form-actions">
+              <button className="button button-primary" disabled={saving}>
               {saving ? 'Saving…' : editingId ? 'Save changes' : 'Add product'}
-            </button>
-          </form>
-        </section>
-
-        <section className="panel list-panel">
-          <div className="panel-heading list-heading">
-            <div>
-              <p className="eyebrow">YOUR CATALOG</p>
-              <h2>All products</h2>
+              </button>
+              <button type="button" className="button button-secondary" onClick={cancelEdit}>Cancel</button>
             </div>
-            <button className="button button-outline" onClick={loadProducts} disabled={loading}>
-              {loading ? 'Loading…' : 'Refresh'}
-            </button>
-          </div>
+            </form>
+          </section>
+        ) : (
+          <>
+            <div className="page-heading">
+              <div>
+                <p className="eyebrow">Inventory</p>
+                <h1>Product catalog</h1>
+                <p className="page-subtitle">A clear view of your collection.</p>
+              </div>
+              <button
+                className="button button-primary"
+                onClick={() => { setShowForm(true); setError(''); setNotice('') }}
+              >
+                Add product
+              </button>
+            </div>
+            {error && <div className="notice notice-error" role="alert">{error}</div>}
+            {notice && <div className="notice" role="status">{notice}</div>}
+            <div className="catalog-toolbar">
+              <span>{products.length} {products.length === 1 ? 'product' : 'products'}</span>
+              <button className="link-button" onClick={loadProducts} disabled={loading}>
+                {loading ? 'Refreshing…' : 'Refresh'}
+              </button>
+            </div>
           {loading && products.length === 0 ? (
-            <div className="empty-state">Loading products…</div>
+            <div className="empty-state"><p>Loading products…</p></div>
           ) : products.length === 0 ? (
             <div className="empty-state">
-              <span className="empty-icon">＋</span>
-              <h3>No products yet</h3>
-              <p>Add your first product using the form.</p>
+              <h2>Your catalog is ready.</h2>
+              <p>Add your first product to begin.</p>
+              <button
+                className="button button-primary"
+                onClick={() => { setShowForm(true); setError(''); setNotice('') }}
+              >
+                Add first product
+              </button>
             </div>
           ) : (
             <div className="table-wrap">
               <table>
                 <thead>
                   <tr>
+                    <th>ID</th>
                     <th>Product</th>
+                    <th>Description</th>
                     <th>Price</th>
-                    <th>Stock</th>
-                    <th aria-label="Actions" />
+                    <th>Quantity</th>
+                    <th>Created</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {products.map((product) => (
                     <tr key={product.id}>
-                      <td>
-                        <strong>{product.product_name}</strong>
-                        {product.description && <span className="product-description">{product.description}</span>}
-                      </td>
-                      <td className="price-cell">${Number(product.price).toFixed(2)}</td>
-                      <td>
-                        <span className={`stock-pill ${Number(product.quantity) === 0 ? 'stock-empty' : ''}`}>
-                          {product.quantity} in stock
-                        </span>
-                      </td>
-                      <td className="actions-cell">
-                        <button className="text-button" onClick={() => beginEdit(product)}>Edit</button>
-                        <button className="text-button text-danger" onClick={() => handleDelete(product)}>Delete</button>
+                      <td className="product-id" data-label="ID">{product.id}</td>
+                      <td className="product-name" data-label="Product">{product.product_name}</td>
+                      <td className="product-description" data-label="Description">{product.description || '—'}</td>
+                      <td className="product-price" data-label="Price">₱{Number(product.price).toFixed(2)}</td>
+                      <td data-label="Quantity">{product.quantity}</td>
+                      <td data-label="Created">{product.created_at || '—'}</td>
+                      <td className="product-actions" data-label="Actions">
+                        <button className="button button-secondary button-small" onClick={() => beginEdit(product)}>Edit</button>
+                        <button className="button button-danger button-small" onClick={() => handleDelete(product)}>Delete</button>
                       </td>
                     </tr>
                   ))}
@@ -348,14 +370,11 @@ function App() {
               </table>
             </div>
           )}
-        </section>
-      </div>
-
-      <footer className="footer">
-        <span>Mark Product Management</span>
-        <span>Powered by LavaLust API</span>
-      </footer>
-    </main>
+          </>
+        )}
+        <footer className="page-footer">Product Desk · Private access</footer>
+      </main>
+    </>
   )
 }
 
