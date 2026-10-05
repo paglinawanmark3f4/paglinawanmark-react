@@ -22,7 +22,7 @@ const emptyProduct = {
 function App() {
   const [user, setUser] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem('mark6_user') || 'https://paglinawanmark-act-6.onrender.com')
+      return JSON.parse(localStorage.getItem('mark6_user') || 'https://paglinawanmark-act-6.onrender.com/api')
     } catch {
       return null
     }
